@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f8fafc" />
+  <title>TechFlow — Dashboard</title>
+  <script>
+    // Define o tema antes da renderização para evitar flash de tema incorreto.
+    (() => {
+      const saved = localStorage.getItem("techflow-theme") || "system";
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (saved === "dark" || (saved === "system" && prefersDark)) {
+        document.documentElement.classList.add("dark");
+      }
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"] },
+          colors: {
+            brand: {
+              50: "#eef2ff", 100: "#e0e7ff", 500: "#6366f1",
+              600: "#4f46e5", 700: "#4338ca"
+            }
+          },
+          boxShadow: {
+            soft: "0 8px 30px rgba(15, 23, 42, 0.06)"
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="h-full bg-slate-50 font-sans text-slate-800 antialiased transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100">
+  <div class="min-h-screen">
+    <div id="sidebar-overlay" class="fixed inset-0 z-40 hidden bg-slate-950/50 backdrop-blur-sm lg:hidden" aria-hidden="true"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col border-r border-slate-200 bg-white px-5 py-6 transition-transform duration-300 ease-in-out dark:border-slate-800 dark:bg-slate-900 lg:translate-x-0">
+      <div class="mb-10 flex items-center justify-between gap-3 px-2">
+        <a href="#" class="flex items-center gap-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="TechFlow início">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white shadow-lg shadow-indigo-500/25">
+            <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"/><path d="m8 10 4 2 4-2M12 12v5"/></svg>
+          </span>
+          <span><span class="block text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">TechFlow</span><span class="block text-xs text-slate-500 dark:text-slate-400">Workspace</span></span>
+        </a>
+        <button id="close-sidebar" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:hover:bg-slate-800 lg:hidden" aria-label="Fechar menu">✕</button>
+      </div>
+
+      <p class="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Workspace</p>
+      <nav class="flex flex-col gap-1" aria-label="Navegação principal">
+        <a href="#dashboard" class="nav-link nav-link-active group"><span class="nav-icon">▦</span><span>Dashboard</span><span class="ml-auto rounded-md bg-white/15 px-2 py-0.5 text-[10px] font-bold">Visão geral</span></a>
+        <a href="#projetos" class="nav-link group"><span class="nav-icon">◫</span><span>Projetos</span><span class="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300">6</span></a>
+        <a href="#equipes" class="nav-link group"><span class="nav-icon">♧</span><span>Equipes</span></a>
+        <a href="#tarefas" class="nav-link group"><span class="nav-icon">☷</span><span>Tarefas</span></a>
+        <a href="#relatorios" class="nav-link group"><span class="nav-icon">▥</span><span>Relatórios</span></a>
+      </nav>
+
+      <div class="mt-9">
+        <p class="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Preferências</p>
+        <button id="settings-shortcut" class="nav-link w-full text-left group"><span class="nav-icon">⚙</span><span>Configurações</span></button>
+      </div>
+
+      <div class="mt-auto rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 p-4 dark:border-indigo-900/60 dark:from-indigo-950/70 dark:to-violet-950/40">
+        <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white text-lg shadow-sm dark:bg-slate-800">✦</div>
+        <p class="font-semibold text-slate-900 dark:text-white">Trabalhe com foco</p>
+        <p class="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-300">Organize entregas e mantenha o time na mesma direção.</p>
+        <button id="sidebar-new-project" class="mt-4 w-full rounded-xl bg-brand-600 px-3 py-2.5 text-sm font-semibold text-white transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-brand-700 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900">+ Novo projeto</button>
+      </div>
+      <div class="mt-5 flex items-center gap-3 border-t border-slate-100 px-2 pt-5 dark:border-slate-800">
+        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 to-orange-400 text-sm font-bold text-white">LN</div>
+        <div class="min-w-0 flex-1"><p class="truncate text-sm font-semibold text-slate-800 dark:text-slate-100">Lucas Nogueira</p><p class="truncate text-xs text-slate-500">Administrador</p></div>
+        <span class="h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/10" title="Online"></span>
+      </div>
+    </aside>
+
+    <div class="min-h-screen lg:pl-72">
+      <header class="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/85">
+        <div class="flex h-[76px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+          <div class="flex min-w-0 items-center gap-3">
+            <button id="open-sidebar" class="rounded-xl border border-slate-200 p-2.5 text-slate-600 transition hover:bg-slate-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 lg:hidden" aria-label="Abrir menu"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+            <div class="hidden min-w-0 sm:block"><p class="text-xs text-slate-500 dark:text-slate-400">Workspace / <span class="text-slate-700 dark:text-slate-200">Dashboard</span></p><h1 class="mt-0.5 truncate text-lg font-bold text-slate-900 dark:text-white">Visão geral</h1></div>
+            <h1 class="truncate text-lg font-bold sm:hidden">Dashboard</h1>
+          </div>
+
+          <div class="hidden max-w-md flex-1 md:mx-6 md:flex lg:max-w-lg">
+            <label class="relative w-full">
+              <span class="sr-only">Pesquisar</span>
+              <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+              <input id="project-search" type="search" placeholder="Buscar projetos, equipes..." class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-12 text-sm outline-none transition focus:border-brand-500 focus:bg-white focus:ring-4 focus:ring-brand-500/10 dark:border-slate-700 dark:bg-slate-900 dark:focus:bg-slate-900" />
+              <kbd class="absolute right-3 top-1/2 -translate-y-1/2 rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] text-slate-400 dark:border-slate-700 dark:bg-slate-800">⌘ K</kbd>
+            </label>
+          </div>
+
+          <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+            <button id="mobile-search-toggle" class="rounded-xl p-2.5 text-slate-500 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-slate-300 dark:hover:bg-slate-800 md:hidden" aria-label="Mostrar pesquisa"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+            <button id="notifications-button" class="relative rounded-xl p-2.5 text-slate-500 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-slate-300 dark:hover:bg-slate-800" aria-label="Notificações"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-rose-500 dark:border-slate-950"></span></button>
+            <div class="relative">
+              <button id="user-menu-button" class="flex items-center gap-2 rounded-xl p-1.5 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:hover:bg-slate-800" aria-expanded="false" aria-haspopup="true">
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 to-orange-400 text-xs font-bold text-white">LN</span>
+                <span class="hidden text-left xl:block"><span class="block text-sm font-semibold">Lucas Nogueira</span><span class="block text-xs text-slate-500">Administrador</span></span>
+                <svg class="hidden h-4 w-4 text-slate-400 sm:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 10 5 5 5-5"/></svg>
+              </button>
+              <div id="user-dropdown" class="absolute right-0 top-full mt-2 hidden w-56 origin-top-right rounded-2xl border border-slate-200 bg-white p-2 shadow-soft transition dark:border-slate-700 dark:bg-slate-900" role="menu">
+                <div class="border-b border-slate-100 px-3 py-2 dark:border-slate-800"><p class="text-sm font-semibold">Lucas Nogueira</p><p class="text-xs text-slate-500">lucas@techflow.dev</p></div>
+                <button class="dropdown-item" role="menuitem" id="profile-action">Meu perfil <span>↗</span></button>
+                <button class="dropdown-item" role="menuitem" id="theme-action">Preferências de tema <span>◐</span></button>
+                <button class="dropdown-item text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30" role="menuitem" id="logout-action">Sair <span>⇥</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="mobile-search" class="hidden border-t border-slate-100 px-4 py-3 dark:border-slate-800 md:hidden">
+          <input id="mobile-project-search" type="search" placeholder="Buscar projetos..." class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 dark:border-slate-700 dark:bg-slate-900" />
+        </div>
+      </header>
+
+      <main id="dashboard" class="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 2xl:px-10">
+        <section class="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+          <div><p class="mb-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Seu workspace está em dia</p><h2 class="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Bom trabalho, Lucas <span aria-hidden="true">👋</span></h2><p class="mt-2 max-w-xl text-sm leading-6 text-slate-500 dark:text-slate-400 sm:text-base">Aqui está o resumo do que está acontecendo com seus projetos hoje.</p></div>
+          <div class="flex flex-wrap items-center gap-3">
+            <button id="export-button" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"><span>↓</span> Exportar</button>
+            <button id="new-project-button" class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-brand-700 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-slate-950"><span class="text-lg leading-none">+</span> Novo projeto</button>
+          </div>
+        </section>
+
+        <section class="mb-9 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores">
+          <article class="stat-card group"><div class="flex items-start justify-between"><span class="stat-label">Projetos ativos</span><span class="stat-icon bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300">◫</span></div><div class="mt-4 flex items-end justify-between gap-2"><div><p id="active-count" class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">12</p><p class="mt-1 text-xs text-emerald-600 dark:text-emerald-400"><span class="font-bold">↑ 12,5%</span> <span class="text-slate-400">vs. mês passado</span></p></div><svg class="h-10 w-24 text-indigo-500 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 100 40" fill="none"><path d="M2 31 17 26 29 29 43 15 57 21 72 10 84 14 98 3" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 31 17 26 29 29 43 15 57 21 72 10 84 14 98 3V40H2Z" fill="currentColor" opacity=".1"/></svg></div></article>
+          <article class="stat-card group"><div class="flex items-start justify-between"><span class="stat-label">Projetos concluídos</span><span class="stat-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300">✓</span></div><div class="mt-4 flex items-end justify-between gap-2"><div><p id="completed-count" class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">28</p><p class="mt-1 text-xs text-emerald-600 dark:text-emerald-400"><span class="font-bold">↑ 8,2%</span> <span class="text-slate-400">vs. mês passado</span></p></div><svg class="h-10 w-24 text-emerald-500 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 100 40" fill="none"><path d="M2 33 17 25 29 29 43 20 57 22 72 11 84 15 98 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 33 17 25 29 29 43 20 57 22 72 11 84 15 98 4V40H2Z" fill="currentColor" opacity=".1"/></svg></div></article>
+          <article class="stat-card group"><div class="flex items-start justify-between"><span class="stat-label">Tarefas pendentes</span><span class="stat-icon bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-300">◷</span></div><div class="mt-4 flex items-end justify-between gap-2"><div><p id="pending-count" class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">46</p><p class="mt-1 text-xs text-amber-600 dark:text-amber-400"><span class="font-bold">12 vencem hoje</span></p></div><svg class="h-10 w-24 text-amber-500 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 100 40" fill="none"><path d="M2 7 17 16 29 12 43 25 57 18 72 28 84 22 98 34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 7 17 16 29 12 43 25 57 18 72 28 84 22 98 34V40H2Z" fill="currentColor" opacity=".1"/></svg></div></article>
+          <article id="equipes" class="stat-card group"><div class="flex items-start justify-between"><span class="stat-label">Equipes</span><span class="stat-icon bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-300">♧</span></div><div class="mt-4 flex items-end justify-between gap-2"><div><p class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">8</p><p class="mt-1 text-xs text-slate-500 dark:text-slate-400"><span class="font-semibold text-sky-600 dark:text-sky-400">32 membros</span> no total</p></div><div class="flex -space-x-2 transition-transform duration-300 group-hover:translate-x-1"><span class="avatar bg-rose-400">MA</span><span class="avatar bg-violet-400">RC</span><span class="avatar bg-amber-400">JP</span><span class="avatar bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-white">+5</span></div></div></article>
+        </section>
+
+        <section class="mb-9 grid grid-cols-1 gap-5 xl:grid-cols-3">
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6 xl:col-span-2 dark:border-slate-800 dark:bg-slate-900">
+            <div class="mb-6 flex flex-wrap items-center justify-between gap-3"><div><h3 class="text-base font-bold text-slate-900 dark:text-white">Visão de produtividade</h3><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Acompanhe o ritmo de entregas da equipe.</p></div><select id="chart-period" class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"><option value="week">Esta semana</option><option value="month">Este mês</option><option value="year">Este ano</option></select></div>
+            <div class="flex h-48 items-end justify-between gap-2 sm:h-56 sm:gap-4" id="productivity-chart" aria-label="Gráfico ilustrativo de produtividade">
+              <div class="chart-column"><div class="chart-bars"><span style="height:42%"></span><span style="height:58%"></span></div><span class="chart-label">Seg</span></div>
+              <div class="chart-column"><div class="chart-bars"><span style="height:64%"></span><span style="height:46%"></span></div><span class="chart-label">Ter</span></div>
+              <div class="chart-column"><div class="chart-bars"><span style="height:50%"></span><span style="height:72%"></span></div><span class="chart-label">Qua</span></div>
+              <div class="chart-column"><div class="chart-bars"><span style="height:80%"></span><span style="height:60%"></span></div><span class="chart-label">Qui</span></div>
+              <div class="chart-column"><div class="chart-bars"><span style="height:67%"></span><span style="height:88%"></span></div><span class="chart-label">Sex</span></div>
+              <div class="chart-column"><div class="chart-bars"><span style="height:35%"></span><span style="height:48%"></span></div><span class="chart-label">Sáb</span></div>
+              <div class="chart-column"><div class="chart-bars"><span style="height:26%"></span><span style="height:32%"></span></div><span class="chart-label">Dom</span></div>
+            </div>
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-5 border-t border-slate-100 pt-4 dark:border-slate-800"><span class="inline-flex items-center gap-2 text-xs text-slate-500"><span class="h-2.5 w-2.5 rounded-sm bg-brand-500"></span>Tarefas concluídas</span><span class="inline-flex items-center gap-2 text-xs text-slate-500"><span class="h-2.5 w-2.5 rounded-sm bg-indigo-200 dark:bg-indigo-300/60"></span>Meta planejada</span></div>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6 dark:border-slate-800 dark:bg-slate-900">
+            <div class="mb-6"><h3 class="text-base font-bold text-slate-900 dark:text-white">Distribuição de tarefas</h3><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Status geral do workspace.</p></div>
+            <div class="flex items-center justify-center py-2">
+              <div class="donut-chart"><div class="donut-center"><span class="text-3xl font-extrabold text-slate-900 dark:text-white">184</span><span class="text-xs text-slate-500">total de tarefas</span></div></div>
+            </div>
+            <div class="mt-6 space-y-4">
+              <div><div class="mb-2 flex justify-between text-sm"><span class="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300"><span class="h-2.5 w-2.5 rounded-full bg-brand-500"></span>Concluídas</span><span class="font-semibold">58%</span></div><div class="progress-track"><div class="h-full w-[58%] rounded-full bg-brand-500"></div></div></div>
+              <div><div class="mb-2 flex justify-between text-sm"><span class="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300"><span class="h-2.5 w-2.5 rounded-full bg-amber-400"></span>Em andamento</span><span class="font-semibold">27%</span></div><div class="progress-track"><div class="h-full w-[27%] rounded-full bg-amber-400"></div></div></div>
+              <div><div class="mb-2 flex justify-between text-sm"><span class="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300"><span class="h-2.5 w-2.5 rounded-full bg-slate-300 dark:bg-slate-600"></span>A fazer</span><span class="font-semibold">15%</span></div><div class="progress-track"><div class="h-full w-[15%] rounded-full bg-slate-300 dark:bg-slate-600"></div></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="projetos" class="mb-10">
+          <div class="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div><div class="flex items-center gap-2"><h3 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">Projetos em destaque</h3><span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300" id="project-total">6 projetos</span></div><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Veja o progresso das iniciativas da sua equipe.</p></div>
+            <div class="flex flex-wrap items-center gap-2"><select id="project-filter" class="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-600 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"><option value="all">Todos os projetos</option><option value="Em andamento">Em andamento</option><option value="Em revisão">Em revisão</option><option value="Planejamento">Planejamento</option></select><button id="view-all-button" class="rounded-xl px-3 py-2.5 text-sm font-semibold text-brand-600 transition hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-indigo-300 dark:hover:bg-indigo-950/50">Ver todos →</button></div>
+          </div>
+          <div id="project-grid" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+            <article class="project-card group lg:col-span-2" data-name="Redesign da plataforma" data-status="Em andamento"><div class="mb-5 flex items-start justify-between gap-3"><div class="flex items-center gap-3"><div class="project-symbol bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300">✳</div><div><h4 class="font-bold text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-indigo-300">Redesign da plataforma</h4><p class="mt-1 text-xs text-slate-500">Design & Produto</p></div></div><button class="project-menu" aria-label="Opções do projeto Redesign da plataforma">•••</button></div><div class="mb-4 flex flex-wrap items-center gap-2"><span class="status-pill status-progress">Em andamento</span><span class="priority-pill"><span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>Alta prioridade</span></div><p class="mb-5 line-clamp-2 text-sm leading-6 text-slate-500 dark:text-slate-400">Uma experiência mais simples, intuitiva e acessível para todos os clientes.</p><div class="mb-4 flex items-center justify-between text-xs"><span class="font-medium text-slate-500">Progresso</span><span class="font-bold text-slate-800 dark:text-slate-200">72%</span></div><div class="progress-track"><div class="h-full w-[72%] rounded-full bg-violet-500 transition-all duration-500"></div></div><div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4 dark:border-slate-800"><div class="flex -space-x-2"><span class="avatar bg-rose-400">MA</span><span class="avatar bg-sky-400">RC</span><span class="avatar bg-emerald-400">JL</span><span class="avatar bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-white">+2</span></div><span class="inline-flex items-center gap-1.5 text-xs text-slate-500">▣ 18 jun, 2026</span></div></article>
+            <article class="project-card group" data-name="App mobile v2" data-status="Em andamento"><div class="mb-5 flex items-start justify-between gap-3"><div class="flex items-center gap-3"><div class="project-symbol bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300">▣</div><div><h4 class="font-bold text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-indigo-300">App mobile v2</h4><p class="mt-1 text-xs text-slate-500">Desenvolvimento</p></div></div><button class="project-menu" aria-label="Opções do projeto App mobile v2">•••</button></div><div class="mb-4 flex flex-wrap items-center gap-2"><span class="status-pill status-progress">Em andamento</span><span class="priority-pill"><span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>Média</span></div><p class="mb-5 text-sm leading-6 text-slate-500 dark:text-slate-400">Novas funcionalidades e melhorias de performance no aplicativo.</p><div class="mb-4 flex items-center justify-between text-xs"><span class="font-medium text-slate-500">Progresso</span><span class="font-bold">48%</span></div><div class="progress-track"><div class="h-full w-[48%] rounded-full bg-sky-500 transition-all duration-500"></div></div><div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800"><div class="flex -space-x-2"><span class="avatar bg-amber-400">JP</span><span class="avatar bg-violet-400">CA</span><span class="avatar bg-emerald-400">FS</span></div><span class="text-xs text-slate-500">▣ 24 jun, 2026</span></div></article>
+            <article class="project-card group lg:row-span-2" data-name="Campanha de lançamento" data-status="Em revisão"><div class="mb-5 flex items-start justify-between gap-3"><div class="flex items-center gap-3"><div class="project-symbol bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300">↗</div><div><h4 class="font-bold text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-indigo-300">Campanha de lançamento</h4><p class="mt-1 text-xs text-slate-500">Marketing</p></div></div><button class="project-menu" aria-label="Opções do projeto Campanha de lançamento">•••</button></div><div class="mb-4 flex flex-wrap items-center gap-2"><span class="status-pill status-review">Em revisão</span><span class="priority-pill"><span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>Alta prioridade</span></div><p class="mb-6 text-sm leading-6 text-slate-500 dark:text-slate-400">Planejamento de canais, conteúdos e materiais para a nova campanha.</p><div class="mb-2 flex items-center justify-between text-xs"><span class="font-medium text-slate-500">Progresso</span><span class="font-bold">90%</span></div><div class="progress-track"><div class="h-full w-[90%] rounded-full bg-pink-500 transition-all duration-500"></div></div><div class="my-6 rounded-xl bg-slate-50 p-4 dark:bg-slate-800/70"><p class="text-xs font-semibold text-slate-500 dark:text-slate-400">Próxima entrega</p><p class="mt-1 text-sm font-bold">Revisão dos criativos</p><p class="mt-1 text-xs text-slate-500">Amanhã, às 16h</p></div><div class="mt-auto flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800"><div class="flex -space-x-2"><span class="avatar bg-rose-400">BA</span><span class="avatar bg-sky-400">MC</span></div><span class="text-xs text-slate-500">▣ 15 jun, 2026</span></div></article>
+            <article class="project-card group" data-name="Portal de analytics" data-status="Planejamento"><div class="mb-5 flex items-start justify-between gap-3"><div class="flex items-center gap-3"><div class="project-symbol bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">▤</div><div><h4 class="font-bold text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-indigo-300">Portal de analytics</h4><p class="mt-1 text-xs text-slate-500">Dados & BI</p></div></div><button class="project-menu" aria-label="Opções do projeto Portal de analytics">•••</button></div><div class="mb-4 flex flex-wrap items-center gap-2"><span class="status-pill status-planning">Planejamento</span><span class="priority-pill"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Baixa</span></div><p class="mb-5 text-sm leading-6 text-slate-500 dark:text-slate-400">Painéis e relatórios para transformar dados em decisões.</p><div class="mb-4 flex items-center justify-between text-xs"><span class="font-medium text-slate-500">Progresso</span><span class="font-bold">18%</span></div><div class="progress-track"><div class="h-full w-[18%] rounded-full bg-emerald-500 transition-all duration-500"></div></div><div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800"><div class="flex -space-x-2"><span class="avatar bg-emerald-400">FS</span><span class="avatar bg-amber-400">JP</span></div><span class="text-xs text-slate-500">▣ 02 jul, 2026</span></div></article>
+            <article class="project-card group" data-name="Automação de processos" data-status="Em andamento"><div class="mb-5 flex items-start justify-between gap-3"><div class="flex items-center gap-3"><div class="project-symbol bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">⌘</div><div><h4 class="font-bold text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-indigo-300">Automação de processos</h4><p class="mt-1 text-xs text-slate-500">Operações</p></div></div><button class="project-menu" aria-label="Opções do projeto Automação de processos">•••</button></div><div class="mb-4 flex flex-wrap items-center gap-2"><span class="status-pill status-progress">Em andamento</span><span class="priority-pill"><span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>Média</span></div><p class="mb-5 text-sm leading-6 text-slate-500 dark:text-slate-400">Redução de tarefas manuais com fluxos inteligentes.</p><div class="mb-4 flex items-center justify-between text-xs"><span class="font-medium text-slate-500">Progresso</span><span class="font-bold">61%</span></div><div class="progress-track"><div class="h-full w-[61%] rounded-full bg-amber-500 transition-all duration-500"></div></div><div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800"><div class="flex -space-x-2"><span class="avatar bg-violet-400">CA</span><span class="avatar bg-rose-400">MA</span><span class="avatar bg-sky-400">RC</span></div><span class="text-xs text-slate-500">▣ 28 jun, 2026</span></div></article>
+            <article class="project-card group" data-name="Central de conhecimento" data-status="Em revisão"><div class="mb-5 flex items-start justify-between gap-3"><div class="flex items-center gap-3"><div class="project-symbol bg-teal-100 text-teal-700 dark:bg-teal-950 dark:text-teal-300">▧</div><div><h4 class="font-bold text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-indigo-300">Central de conhecimento</h4><p class="mt-1 text-xs text-slate-500">People & Culture</p></div></div><button class="project-menu" aria-label="Opções do projeto Central de conhecimento">•••</button></div><div class="mb-4 flex flex-wrap items-center gap-2"><span class="status-pill status-review">Em revisão</span><span class="priority-pill"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>Baixa</span></div><p class="mb-5 text-sm leading-6 text-slate-500 dark:text-slate-400">Um espaço central para processos, guias e aprendizados.</p><div class="mb-4 flex items-center justify-between text-xs"><span class="font-medium text-slate-500">Progresso</span><span class="font-bold">84%</span></div><div class="progress-track"><div class="h-full w-[84%] rounded-full bg-teal-500 transition-all duration-500"></div></div><div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800"><div class="flex -space-x-2"><span class="avatar bg-sky-400">MC</span><span class="avatar bg-emerald-400">JL</span></div><span class="text-xs text-slate-500">▣ 20 jun, 2026</span></div></article>
+          </div>
+          <p id="empty-projects" class="mt-5 hidden rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500 dark:border-slate-700">Nenhum projeto encontrado. Tente alterar a pesquisa ou o filtro.</p>
+        </section>
+
+        <section id="tarefas" class="grid grid-cols-1 gap-5 xl:grid-cols-3">
+          <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6 xl:col-span-2 dark:border-slate-800 dark:bg-slate-900">
+            <div class="mb-5 flex items-center justify-between gap-3"><div><h3 class="text-base font-bold text-slate-900 dark:text-white">Atividade recente</h3><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">As últimas atualizações do seu time.</p></div><button id="activity-see-all" class="text-sm font-semibold text-brand-600 hover:text-brand-700 focus:outline-none focus:underline dark:text-indigo-300">Ver tudo</button></div>
+            <div class="space-y-5">
+              <div class="flex gap-3"><span class="activity-avatar bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300">MA</span><div class="min-w-0 flex-1"><p class="text-sm leading-6"><span class="font-semibold text-slate-900 dark:text-white">Mariana Alves</span> concluiu uma tarefa em <span class="font-semibold">Redesign da plataforma</span>.</p><p class="mt-1 text-xs text-slate-400">Há 18 minutos</p></div><span class="mt-1 text-emerald-500">✓</span></div>
+              <div class="flex gap-3"><span class="activity-avatar bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300">RC</span><div class="min-w-0 flex-1"><p class="text-sm leading-6"><span class="font-semibold text-slate-900 dark:text-white">Rafael Costa</span> comentou em <span class="font-semibold">App mobile v2</span>.</p><p class="mt-1 text-xs text-slate-400">Há 42 minutos</p></div><span class="mt-1 text-brand-500">◌</span></div>
+              <div class="flex gap-3"><span class="activity-avatar bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">JP</span><div class="min-w-0 flex-1"><p class="text-sm leading-6"><span class="font-semibold text-slate-900 dark:text-white">João Pedro</span> atualizou o prazo de <span class="font-semibold">Automação de processos</span>.</p><p class="mt-1 text-xs text-slate-400">Há 2 horas</p></div><span class="mt-1 text-amber-500">◷</span></div>
+            </div>
+          </div>
+          <div id="relatorios" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft sm:p-6 dark:border-slate-800 dark:bg-slate-900">
+            <div class="mb-5"><h3 class="text-base font-bold text-slate-900 dark:text-white">Próximos prazos</h3><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Entregas que merecem atenção.</p></div>
+            <div class="space-y-4">
+              <div class="flex gap-3"><div class="deadline-date"><span>JUN</span><strong>15</strong></div><div class="min-w-0 flex-1"><p class="truncate text-sm font-semibold">Campanha de lançamento</p><p class="mt-1 text-xs text-slate-500">Revisão final · Marketing</p></div><span class="mt-1 h-2 w-2 rounded-full bg-rose-500"></span></div>
+              <div class="flex gap-3"><div class="deadline-date"><span>JUN</span><strong>18</strong></div><div class="min-w-0 flex-1"><p class="truncate text-sm font-semibold">Redesign da plataforma</p><p class="mt-1 text-xs text-slate-500">Entrega de protótipo</p></div><span class="mt-1 h-2 w-2 rounded-full bg-amber-500"></span></div>
+              <div class="flex gap-3"><div class="deadline-date"><span>JUN</span><strong>20</strong></div><div class="min-w-0 flex-1"><p class="truncate text-sm font-semibold">Central de conhecimento</p><p class="mt-1 text-xs text-slate-500">Validação com usuários</p></div><span class="mt-1 h-2 w-2 rounded-full bg-emerald-500"></span></div>
+            </div>
+            <button id="calendar-button" class="mt-6 w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Ver calendário →</button>
+          </div>
+        </section>
+        <footer class="mt-10 flex flex-col justify-between gap-2 border-t border-slate-200 py-5 text-xs text-slate-400 sm:flex-row dark:border-slate-800"><span>© 2026 TechFlow. Feito para equipes que fazem acontecer.</span><span>Dashboard demonstrativo · Dados fictícios</span></footer>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal de cadastro -->
+  <div id="project-modal" class="fixed inset-0 z-[70] hidden items-center justify-center overflow-y-auto bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-panel my-auto w-full max-w-2xl rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+      <div class="flex items-start justify-between border-b border-slate-100 px-5 py-5 sm:px-7 dark:border-slate-800"><div><p class="mb-1 text-xs font-bold uppercase tracking-widest text-brand-600 dark:text-indigo-300">Workspace / Projetos</p><h2 id="modal-title" class="text-xl font-extrabold text-slate-900 dark:text-white">Criar novo projeto</h2><p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Preencha as informações para organizar sua próxima entrega.</p></div><button id="close-modal" class="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:hover:bg-slate-800 dark:hover:text-white" aria-label="Fechar formulário">✕</button></div>
+      <form id="project-form" novalidate class="px-5 py-6 sm:px-7">
+        <div id="form-alert" class="mb-5 hidden rounded-xl border px-4 py-3 text-sm" role="status" aria-live="polite"></div>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="sm:col-span-2"><label for="project-name" class="form-label">Nome do projeto <span class="text-rose-500">*</span></label><input id="project-name" name="name" required maxlength="70" placeholder="Ex.: Redesign do aplicativo" class="form-control" /><p class="field-error" data-error-for="project-name"></p></div>
+          <div><label for="project-owner" class="form-label">Responsável <span class="text-rose-500">*</span></label><select id="project-owner" name="owner" required class="form-control"><option value="">Selecione uma pessoa</option><option>Mariana Alves</option><option>Rafael Costa</option><option>João Pedro</option><option>Camila Andrade</option><option>Lucas Nogueira</option></select><p class="field-error" data-error-for="project-owner"></p></div>
+          <div><label for="project-category" class="form-label">Categoria <span class="text-rose-500">*</span></label><select id="project-category" name="category" required class="form-control"><option value="">Selecione a categoria</option><option>Design & Produto</option><option>Desenvolvimento</option><option>Marketing</option><option>Dados & BI</option><option>Operações</option><option>People & Culture</option></select><p class="field-error" data-error-for="project-category"></p></div>
+          <div><label for="project-priority" class="form-label">Prioridade</label><select id="project-priority" name="priority" class="form-control"><option value="Média">Média</option><option value="Alta">Alta</option><option value="Baixa">Baixa</option></select></div>
+          <div><label for="project-deadline" class="form-label">Prazo <span class="text-rose-500">*</span></label><input id="project-deadline" name="deadline" type="date" required class="form-control" /><p class="field-error" data-error-for="project-deadline"></p></div>
+          <div class="sm:col-span-2"><label for="project-description" class="form-label">Descrição <span class="text-rose-500">*</span></label><textarea id="project-description" name="description" rows="4" required minlength="10" maxlength="500" placeholder="Descreva o objetivo e os principais resultados esperados..." class="form-control resize-y"></textarea><div class="mt-1 flex justify-between gap-3"><p class="field-error" data-error-for="project-description"></p><span id="description-counter" class="text-xs text-slate-400">0/500</span></div></div>
+        </div>
+        <div class="mt-7 flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end dark:border-slate-800"><button type="button" id="cancel-modal" class="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 active:scale-[.98] dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">Cancelar</button><button id="submit-project" type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-brand-700 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-slate-900"><span>+</span> Criar projeto</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="pointer-events-none fixed bottom-4 right-4 z-[90] hidden max-w-sm rounded-2xl border border-emerald-200 bg-white px-4 py-3 shadow-xl dark:border-emerald-900 dark:bg-slate-900" role="status" aria-live="polite"><div class="flex items-start gap-3"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">✓</span><div><p id="toast-title" class="text-sm font-bold text-slate-900 dark:text-white">Tudo certo!</p><p id="toast-message" class="mt-0.5 text-xs leading-5 text-slate-500 dark:text-slate-400"></p></div></div></div>
+  <script src="js/app.js"></script>
+</body>
+</html>
